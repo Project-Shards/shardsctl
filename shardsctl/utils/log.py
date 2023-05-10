@@ -1,0 +1,45 @@
+import logging
+import logging.config
+import yaml
+
+def setup_logging() -> logger:
+    """
+    Sets up logging.
+
+    Returns:
+    logger: the logger object that can be used to output log messages
+    """
+    logging_config = """
+version: 1
+
+formatters:
+    simple:
+        format: "%(name)s - %(lineno)d -  %(message)s"
+
+    complex:
+        format: "%(asctime)s - %(name)s - %(lineno)d -  %(message)s"
+
+
+handlers:
+    console:
+        class: logging.StreamHandler
+        level: DEBUG
+        formatter: simple
+
+loggers:
+
+    shard_logging:
+        level: DEBUG
+        handlers: [console]
+        propagate: yes
+
+    __main__:
+        level: DEBUG
+        handlers: [console]
+        propagate: yes
+
+    """
+
+    config = yaml.safe_load(logging_config)
+    logging.config.dictConfig(config)
+    return logging.getLogger("shard_logging")

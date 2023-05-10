@@ -7,5 +7,5 @@ project('shardsctl',
 
 
 
-subdir('src')
+subdir('shardsctl')
 
