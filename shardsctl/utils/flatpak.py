@@ -19,87 +19,69 @@ import os
 import sys
 from shardsctl.utils.command import Command
 from shardsctl.utils.log import setup_logging
-logger=setup_logging()
+
+logger = setup_logging()
+
 
 class FlatpakUtils:
-
     @staticmethod
     def install(
-            package: str,
-            repo: str = None,
-            crash: bool = False,
-            elevated: bool = False,
+        package: str,
+        repo: str = None,
+        crash: bool = False,
+        elevated: bool = False,
     ):
         if repo is None or repo.strip() == "":
-            repo = "shards" # TODO: define this using a config file
-        logger.info(f"Installing package {package}"+f" from {repo}" if repo.strip() != "" else "")
-
-        command=["flatpak", "install", "--noninteractive", "--assumeyes"]
-        if repo != "":
-            command.append(repo)
-        command.append(package)
+            repo = "shards"  # TODO: define this using a config file
+        logger.info(f"Installing package {package} using repository {repo}")
 
         Command.execute_command(
-            command=command,
+            command=[
+                "flatpak",
+                "install",
+                "--noninteractive",
+                "--assumeyes",
+                repo,
+                package,
+            ],
             command_description=f"Installing {package}",
             crash=crash,
-            elevated=elevated
         )
 
     @staticmethod
     def remove(
-            package: str,
-            repo: str,
-            crash: bool = False,
-            elevated: bool = False,
+        package: str,
+        repo: str = None,
+        crash: bool = False,
+        elevated: bool = False,
     ):
-        logger.info(f"Uninstalling package {package}"+f" from {repo}" if repo is not None else "")
+        if repo is None or repo.strip() == "":
+            repo = "shards"  # TODO: set this using a config
+        logger.info(f"Uninstalling package {package} from {repo}")
         Command.execute_command(
-            command=[
-                "flatpak",
-                "uninstall",
-                repo,
-                package
-            ],
+            command=["flatpak", "uninstall", repo, package],
             command_description=f"Uninstalling {package}",
             crash=crash,
-            elevated=elevated
         )
 
     @staticmethod
-    def update(
-            package: str = None,
-            crash: bool = False,
-            elevated: bool = False
-    ):
+    def update(package: str = None, crash: bool = False, elevated: bool = False):
         logpart1 = f"Updating "
         logpart2 = f"package {package} " if package is not None else ""
-        logger.info(logpart1+logpart2)
+        logger.info(logpart1 + logpart2)
 
         Command.execute_command(
-            command=[
-                "flatpak",
-                "update",
-                package
-            ],
-            command_description=logpart1+logpart2,
+            command=["flatpak", "update", package],
+            command_description=logpart1 + logpart2,
             crash=crash,
-            elevated=elevated
         )
 
     @staticmethod
-    def getpath(
-            package: str
-    ) -> str:
+    def getpath(package: str) -> str:
         out = Command.execute_command(
-            command=[
-                "flatpak",
-                "info",
-                "-l",
-                package
-            ],
+            command=["flatpak", "info", "-l", package],
             command_description=f"Getting path for package {package}",
             crash=True,
-            capture=True
+            capture=True,
         )
         return out[1].decode("utf-8").strip()

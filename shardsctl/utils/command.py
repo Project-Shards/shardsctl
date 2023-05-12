@@ -26,25 +26,24 @@ logger = setup_logging()
 class Command:
     @staticmethod
     def execute_command(
-            command: list,
-            command_description: str = "",
-            crash: bool = False,
-            workdir: str = "",
-            elevated: bool = False,
-            capture: bool = False,
+        command: list,
+        command_description: str = "",
+        crash: bool = False,
+        workdir: str = "",
+        capture: bool = False,
     ) -> [str, str, str]:
         """
         Executes a given command and optionally captures the output.
 
         Parameters:
-        command             (list): The command to run, each parameter is a seperate object in the list
-        command_description (str) : A description of what the command does (optional)
-        crash               (bool): Whether the system should crash if the command fails. Defaults to False if not specified
-        workdir             (str) : In what directory the command should run. Runs in the current cwd if not specified
-        capture             (bool): Whether the command output should be captured. Defaults to False if not specified.
+        command (list): The command to run, each parameter is a separate object in the list
+        command_description (str): A description of what the command does (optional)
+        crash (bool): Whether the system should crash if the command fails. Defaults to False if not specified
+        workdir (str): In what directory the command should run. Runs in the current cwd if not specified
+        capture (bool): Whether the command output should be captured. Defaults to False if not specified.
 
         Returns:
-        [str, str, str]: A list containing the returncode, stdout and stderr
+        [str, str, str]: A list containing the return code, stdout and stderr
         """
         if os.environ.get("DEBUG"):
             logger.debug("Command: " + " ".join(command))
@@ -57,14 +56,18 @@ class Command:
         out = subprocess.run(
             rootcommand if elevated else command,
             capture_output=capture,
-            cwd=workdir if workdir.strip() != "" else None
+            cwd=workdir if workdir.strip() != "" else None,
         )
         if out.returncode != 0 and command_description.strip() != "":
-            logger.error(command_description + " failed with returncode " + str(out.returncode))
+            logger.error(
+                command_description + " failed with return code " + str(out.returncode)
+            )
             if crash:
                 sys.exit(out.returncode)
         elif out.returncode != 0:
-            logger.error(" ".join(command) + " failed with returncode " + str(out.returncode))
+            logger.error(
+                " ".join(command) + " failed with return code " + str(out.returncode)
+            )
             if crash:
                 sys.exit(out.returncode)
 
@@ -72,28 +75,25 @@ class Command:
 
     @staticmethod
     def execute_chroot(
-            command: list,
-            command_description: str = "",
-            crash: bool = False,
-            root: str = "/mnt"
+        command: list,
+        command_description: str = "",
+        crash: bool = False,
+        root: str = "/mnt",
     ) -> [str, str, str]:
         """
         Executes a given command in a chroot.
 
         Parameters:
-        command             (list): The command to run, each parameter is a seperate object in the list
-        command_description (str) : A description of what the command does (optional)
-        crash               (bool): Whether the system should crash if the command fails. Defaults to False if not specified
-        root                (str) : The root that chroot should switch to.
+        command (list): The command to run, each parameter is a separate object in the list
+        command_description (str): A description of what the command does (optional)
+        crash (bool): Whether the system should crash if the command fails. Defaults to False if not specified
+        root (str): The root that chroot should switch to.
 
         Returns:
-        [str, str, str]: A list containing the returncode, stdout and stderr
+        [str, str, str]: A list containing the return code, stdout and stderr
         """
         chroot_command = ["arch-chroot", root]
         chroot_command.extend(command)
         return Command.execute_command(
-            command=chroot_command,
-            command_description=command_description,
-            crash=crash,
-            elevated=True
+            command=chroot_command, command_description=command_description, crash=crash
         )

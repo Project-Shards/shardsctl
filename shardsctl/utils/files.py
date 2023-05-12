@@ -17,15 +17,16 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 
-from shardsctl.utils.command import Command
-from os.path import exists
 import os
+import sys
 import stat
+from shardsctl.utils.command import Command
 from shardsctl.utils.log import setup_logging
-logger=setup_logging()
+
+logger = setup_logging()
+
 
 class FileUtils:
-
     @staticmethod
     def create_file(
         path: str,
@@ -40,14 +41,11 @@ class FileUtils:
             logger.debug(f"Creating file {path}")
             if os.environ.get("SHARDS_FAKE"):
                 return
-        file = open(path, 'x')
+        file = open(path, "x")
         file.close()
 
     @staticmethod
-    def delete_file(
-        path: str,
-        crash: bool = False
-    ):
+    def delete_file(path: str, crash: bool = False):
         """
         Deletes a file.
 
@@ -83,10 +81,10 @@ class FileUtils:
             logger.debug(f"Appending {content} to file {path}")
             if os.environ.get("SHARDS_FAKE"):
                 return
-        if not exists(path):
-            logger.warn("File "+path+" doesn't exist! Creating file")
+        if not os.path.exists(path):
+            logger.warn("File " + path + " doesn't exist! Creating file")
             FileUtils.create_file(path)
-        with open(path, 'a') as file:
+        with open(path, "a") as file:
             file.write(content)
 
     @staticmethod
@@ -106,10 +104,10 @@ class FileUtils:
             logger.debug(f"Writing {content} to file {path}")
             if os.environ.get("SHARDS_FAKE"):
                 return
-        if not exists(path):
-            logger.warn("File "+path+" doesn't exist! Creating file")
+        if not os.path.exists(path):
+            logger.warn("File " + path + " doesn't exist! Creating file")
             FileUtils.create_file(path)
-        with open(path, 'w') as file:
+        with open(path, "w") as file:
             file.write(content)
 
     @staticmethod
@@ -127,10 +125,10 @@ class FileUtils:
             logger.debug(f"Creating directory {path}")
             if os.environ.get("SHARDS_FAKE"):
                 return
-        if not exists(path):
+        if not os.path.exists(path):
             os.makedirs(path)
         else:
-            logger.warn("Directory "+path+" already exists!")
+            logger.warn("Directory " + path + " already exists!")
 
     @staticmethod
     def replace_file(
@@ -155,7 +153,7 @@ class FileUtils:
                 f"s/{search}/{replace}/g",
                 path,
             ],
-            command_description="Replacing "+search+" with "+replace+" in file "+path,
+            command_description=f"Replacing {search} with {replace} in file {path}",
             crash=True,
         )
 
@@ -180,7 +178,7 @@ class FileUtils:
                 source,
                 destination,
             ],
-            command_description="Copying file "+source+" to "+destination,
+            command_description="Copying file " + source + " to " + destination,
             crash=crash,
         )
 
@@ -200,14 +198,9 @@ class FileUtils:
         """
         logger.info(f"Copying directory {source} to {destination}")
         Command.execute_command(
-            command=[
-                "cp",
-                "-r",
-                source,
-                destination
-            ],
-            command_description="Copying directory "+source+" to "+destination,
-            crash=crash
+            command=["cp", "-r", source, destination],
+            command_description="Copying directory " + source + " to " + destination,
+            crash=crash,
         )
 
     @staticmethod
@@ -232,9 +225,9 @@ class FileUtils:
         path (str): The path to check
 
         Returns:
-        str: The path the symlink points to. None if the file is not a symlink
+        str: The path the symlink points to. Empty if the file is not a symlink
         """
         if os.path.islink(path):
             return os.readlink(path)
         else:
-            return None
+            return ""

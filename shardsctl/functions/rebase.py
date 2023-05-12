@@ -21,19 +21,19 @@ from shardsctl.utils.flatpak import FlatpakUtils
 from shardsctl.utils.files import FileUtils
 from shardsctl.utils.command import Command
 from shardsctl.utils.log import setup_logging
+
 logger = setup_logging()
 
-def rebase_system(
-        image: str,
-        repo: str = None
-):
+
+def rebase_system(image: str, repo: str = None):
+    """
+    Rebase the system to a new image.
+    Args:
+        image (str): The image name to use
+        repo (str): The repo to pull from, defaults to shards
+    """
     logger.info(f"Rebasing to image {image}")
-    FlatpakUtils.install(
-        package=image,
-        repo=repo,
-        crash=True,
-        elevated=False
-    )
+    FlatpakUtils.install(package=image, repo=repo, crash=True, elevated=False)
     location = FlatpakUtils.getpath(image).split(".local/share/flatpak/app/")[1]
     logger.info(f"Updating init configuration")
     current_time = datetime.datetime.now().strftime("%Y%m%d%H%M")
@@ -46,5 +46,5 @@ export SYSUSRPATH={location}/files/root/usr
 export SYSVARPATH={location}/files/root/var
 export SYSOPTPATH={location}/files/root/opt
 export SYSETCPATH={location}/files/root/etc
-"""
+""",
     )

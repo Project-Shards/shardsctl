@@ -20,11 +20,12 @@ import click
 import sys
 from shardsctl.functions.rebase import rebase_system
 from shardsctl.utils.log import setup_logging
+
 logger = setup_logging()
 
 
 @click.group()
-@click.option('--verbose', is_flag=True, help='Enables verbose mode.', default=False)
+@click.option("--verbose", is_flag=True, help="Enables verbose mode.", default=False)
 def main(verbose):
     print("here")
     if verbose:
@@ -32,11 +33,11 @@ def main(verbose):
 
 
 @main.command()
-@click.argument('image', type=click.STRING)
-@click.argument('repository', type=click.STRING, default="")
+@click.argument("image", type=click.STRING)
+@click.argument("repository", type=click.STRING, default="")
 def rebase(image, repository):
     rebase_system(image=image, repo=repository)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main.main())
