@@ -2,7 +2,7 @@ import logging
 import logging.config
 import yaml
 
-def setup_logging() -> logger:
+def setup_logging():
     """
     Sets up logging.
 

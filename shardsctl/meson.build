@@ -20,6 +20,7 @@ shardsctl_sources = [
     'main.py'
 ]
 
-subdir('utils')
-
 install_data(shardsctl_sources, install_dir: moduledir)
+
+subdir('utils')
+subdir('functions')

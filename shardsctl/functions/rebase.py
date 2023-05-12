@@ -16,5 +16,35 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
+import datetime
+from shardsctl.utils.flatpak import FlatpakUtils
+from shardsctl.utils.files import FileUtils
+from shardsctl.utils.command import Command
+from shardsctl.utils.log import setup_logging
+logger = setup_logging()
 
-
+def rebase_system(
+        image: str,
+        repo: str = None
+):
+    logger.info(f"Rebasing to image {image}")
+    FlatpakUtils.install(
+        package=image,
+        repo=repo,
+        crash=True,
+        elevated=False
+    )
+    location = FlatpakUtils.getpath(image).split(".local/share/flatpak/app/")[1]
+    logger.info(f"Updating init configuration")
+    current_time = datetime.datetime.now().strftime("%Y%m%d%H%M")
+    FileUtils.copy_file("/init.d/rootconf", f"/init.d/rootconf-{current_time}")
+    FileUtils.write_file(
+        path="/init.d/rootconf",
+        content=f"""
+export SYSIMAGENAME={image}
+export SYSUSRPATH={location}/files/root/usr
+export SYSVARPATH={location}/files/root/var
+export SYSOPTPATH={location}/files/root/opt
+export SYSETCPATH={location}/files/root/etc
+"""
+    )

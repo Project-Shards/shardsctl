@@ -17,19 +17,26 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 import click
-from shardimg.utils.log import setup_logging
+import sys
+from shardsctl.functions.rebase import rebase_system
+from shardsctl.utils.log import setup_logging
 logger = setup_logging()
 
 
 @click.group()
 @click.option('--verbose', is_flag=True, help='Enables verbose mode.', default=False)
 def main(verbose):
+    print("here")
     if verbose:
         print("Verbose mode enabled")
 
+
 @main.command()
-@click.argument('image', help='The image to rebase to.')
-@click.argument('repository', help='The repository to pull the image from.', default=None)
+@click.argument('image', type=click.STRING)
+@click.argument('repository', type=click.STRING, default="")
 def rebase(image, repository):
-    logger.info(f"Rebasing to image {image}")
-    logger.info(f"Using repository {repository}")
+    rebase_system(image=image, repo=repository)
+
+
+if __name__ == '__main__':
+    sys.exit(main.main())
