@@ -3,7 +3,8 @@ functionsdir = join_paths(pkgdatadir, 'shardsctl/functions')
 
 shardsctl_sources = [
     '__init__.py',
-    'rebase.py'
+    'rebase.py',
+    'upgrade.py'
 ]
 
 install_data(shardsctl_sources, install_dir: functionsdir)

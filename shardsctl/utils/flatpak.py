@@ -70,8 +70,12 @@ class FlatpakUtils:
         logpart2 = f"package {package} " if package is not None else ""
         logger.info(logpart1 + logpart2)
 
+        command=["flatpak", "update"]
+        if package is not None:
+            command.append(package)
+
         Command.execute_command(
-            command=["flatpak", "update", package],
+            command=command,
             command_description=logpart1 + logpart2,
             crash=crash,
         )

@@ -19,6 +19,7 @@
 import click
 import sys
 from shardsctl.functions.rebase import rebase_system
+from shardsctl.functions.upgrade import upgrade_system
 from shardsctl.utils.log import setup_logging
 
 logger = setup_logging()
@@ -38,6 +39,9 @@ def main(verbose):
 def rebase(image, repository):
     rebase_system(image=image, repo=repository)
 
+@main.command()
+def update():
+    upgrade_system()
 
 if __name__ == "__main__":
     sys.exit(main.main())
